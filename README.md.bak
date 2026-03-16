@@ -1,4 +1,4 @@
-# Intel 8088 x86 Memory Interfacing Lab
+# 8088 Bus Cycles & Assembly Programming Lab
 
 A 2-week hands-on lab for University of Louisville CSE 525 Class (Microcomputer Design) built on the [pi86](https://github.com/homebrew8088/pi86) platform — a Raspberry Pi daughterboard that runs a real NEC V20 (8088-compatible) processor.
 
