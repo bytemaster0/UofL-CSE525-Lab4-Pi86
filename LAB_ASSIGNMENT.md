@@ -2,8 +2,8 @@
 
 **Course:** Microprocessor-Based Systems
 **Duration:** 2 weeks (two lab sessions + out-of-lab work)
-**Team size:** 2–3 students
-**Prerequisites:** Lecture material on 8088 bus timing, memory address decoding, interrupt architecture, and x86 real-mode assembly syntax
+**Team size:** 3–5 students
+**Prerequisites:** Lecture material and lab reference materials on 68K/8088 bus timing, memory address decoding, interrupt architecture, and x86 real-mode assembly syntax
 
 ---
 
@@ -82,7 +82,7 @@ AD0  ====ADDRESS=====|============DATA==============
 
 **Key signals and their meanings:**
 
-- **ALE (Address Latch Enable):** The CPU asserts ALE HIGH during T1 to indicate that AD0–AD7 and A8–A19 carry a valid address. External hardware (or the Pi) samples the address before ALE goes LOW.
+- **ALE (Address Latch Enable):** The CPU asserts ALE HIGH during T1 to indicate that AD0–AD7 and A8–A19 carry a valid address. External hardware (or the Pi) samples the address before ALE goes LOW. This is equivalent to the Address Strobe (AS') on the M68K.
 - **IO/M:** Distinguishes memory cycles (LOW) from I/O cycles (HIGH).
 - **DT/R (Data Transmit/Receive):** Indicates data direction. HIGH = CPU is writing (transmitting) to memory/device. LOW = CPU is reading (receiving).
 - **The address is multiplexed:** AD0–AD7 carry address bits A0–A7 during T1, then switch to data bits D0–D7 during T2–T4.
@@ -243,7 +243,7 @@ Run Program 5 (`prog5.com`).
   - What is the interrupt vector table entry for INT 8h? (Give the segment:offset stored at physical address 0x00020.) Did it change after your program ran?
   - If two interrupts (IRQ0 and IRQ1) are pending simultaneously, what does the pi86 firmware do? Refer to the `x86.cpp` source code in your answer.
 
-### Part 2.4 — Design Your Own Experiment (Open-Ended)
+### Part 2.4 — Design Your Own Experiment (Open-Ended, Extra Credit)
 
 Design and implement one additional experiment that uses at least two of the pi86 firmware features (checkpoint port, wait states, bus statistics, or ROM protection) and produces a measurable result. Your experiment must:
 
@@ -272,13 +272,13 @@ Submit a single PDF lab report with all deliverables in order. Include the names
 | 1.2 | Single-cycle timing measurement table + waveform | 15 |
 | 1.3 | I/O vs. memory cycle comparison, four questions answered | 15 |
 | 1.4 | Annotated bus_trace.csv excerpt + cycle-count analysis | 10 |
-| 2.1 | Wait-state graph, bandwidth calculation, annotated waveform | 20 |
+| 2.1 | Wait-state graph, bandwidth calculation, annotated waveform | 15 |
 | 2.2 | ROM-protection waveforms + written explanation + decoder design | 15 |
-| 2.3 | ISR waveform with six features labeled + three questions answered | 25 |
-| 2.4 | Open-ended experiment: source, capture, write-up | 20 |
-| **Total** | | **130** |
+| 2.3 | ISR waveform with six features labeled + three questions answered | 20 |
+| 2.4 | Open-ended experiment: source, capture, write-up | Extra credit |
+| **Total** |Percentage of 20 points report, 10 points demo | **100** |
 
-Late submissions: 10% per day, maximum 3 days.
+Late submissions: Per CSE 525 syllabus.
 
 ---
 
