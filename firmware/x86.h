@@ -8,7 +8,7 @@
 //  Additions for lab use:
 //    - Bus cycle trace logger (CSV output)
 //    - Configurable wait-state injection via I/O port 0x81
-//    - Debug checkpoint port 0x80  (POST-code style, with GPIO trigger pulse)
+//    - Debug checkpoint port 0x80  (POST-code style; prints to console + CSV)
 //    - Bus activity statistics counters, readable at I/O 0x83-0x8A
 //    - ROM write-protection for 0xF0000–0xFFFFF
 // ============================================================================
@@ -61,17 +61,20 @@
 #define A19    5
 
 // ---------------------------------------------------------------------------
-// Extra GPIO outputs available on the Pi that are NOT used by the 8088 bus.
-// These are used for logic-analyzer trigger / activity signals.
+// Additional GPIO outputs defined for debug signals.
+// NOTE: WiringPi pins 17-18 map to BCM GPIOs 28-29, which are NOT on the
+// standard 40-pin GPIO header — all 28 header pins are used by the 8088 bus.
+// The digitalWrite calls for these pins are harmless no-ops on Pi 3B/4B;
+// they cannot be probed with a logic analyzer.  Checkpoint events are visible
+// in bus_trace.csv (when PI86_LOG=1) and as console output instead.
 // ---------------------------------------------------------------------------
-#define PIN_DEBUG_TRIGGER  17   // Pulsed when ASM writes to port 0x80
-#define PIN_BUS_ACTIVITY   18   // Toggles on every bus transaction
-// pins 19, 20 are available for future expansion
+#define PIN_DEBUG_TRIGGER  17   // Not on 40-pin header; no-op on Pi 3B/4B
+#define PIN_BUS_ACTIVITY   18   // Not on 40-pin header; no-op on Pi 3B/4B
 
 // ---------------------------------------------------------------------------
 // Debug / lab I/O port map (all in 8-bit port range for easy OUT imm8)
 // ---------------------------------------------------------------------------
-#define PORT_DEBUG_CHECKPOINT  0x80  // Write: log POST code + pulse trigger GPIO
+#define PORT_DEBUG_CHECKPOINT  0x80  // Write: log POST code to console + CSV
 #define PORT_WAIT_STATE_CTRL   0x81  // Write: set # of wait states (0–7)
                                      // Read:  return current wait-state count
 #define PORT_STATS_CTRL        0x82  // Write 0x00: reset all counters
@@ -93,7 +96,7 @@
 // ---------------------------------------------------------------------------
 // Bus cycle trace log
 // ---------------------------------------------------------------------------
-#define BUS_LOG_CAPACITY  8192      // Circular-buffer depth (entries)
+#define BUS_LOG_CAPACITY  65536     // Circular-buffer depth (entries)
 #define BUS_LOG_FILENAME  "bus_trace.csv"
 
 typedef enum {

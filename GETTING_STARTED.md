@@ -221,7 +221,14 @@ Zoom into the I/O write cycles. They look different from memory cycles:
 
 ## Step 7 — Reading the Bus Trace CSV
 
-While the system is running (or after running a program), you can examine the software-side record of every bus cycle.
+Bus cycle logging is **off by default** because it generates ~1–2 MB/s of disk writes and is not needed for every exercise. Enable it by setting `PI86_LOG=1` when launching pi86:
+
+```bash
+# On the Pi — from the terminal running the firmware:
+PI86_LOG=1 ./run_pi86.sh
+```
+
+When logging is active, the firmware prints `[buslog] Logging bus cycles to bus_trace.csv` at startup. When disabled, it prints `[buslog] Bus logging disabled.`
 
 ### Access via SSH
 
@@ -395,7 +402,7 @@ Use this before each lab session to make sure you are ready:
 - [ ] Sample rate set to 10 MS/s (Step 4c)
 - [ ] `dir` at DOS prompt shows all 5 lab programs (Step 6a)
 - [ ] Running PROG2 and looking for IO/M=HIGH cycles shows the I/O write pattern (Step 6b–6c)
-- [ ] You can SSH into the Pi and see `bus_trace.csv` (Step 7)
+- [ ] If using CSV logging: pi86 was launched with `PI86_LOG=1` and `bus_trace.csv` is updating (Step 7)
 - [ ] NASM installed on your laptop and `test.com` assembles without errors (Step 8b)
 
 If any item fails, resolve it before moving on to the lab exercises.
@@ -425,10 +432,10 @@ If any item fails, resolve it before moving on to the lab exercises.
 - Verify the program returns to DOS with `int 21h / AH=4Ch` at the end.
 - Check that segment registers are set correctly. In a COM file, CS=DS=ES=SS all point to the same segment. If your program uses ES for a different segment (as in prog4), make sure you push/pop DS correctly around ISR calls.
 
-### `bus_trace.csv` is empty or not updating
+### `bus_trace.csv` is empty, missing, or not updating
 
-- The file is flushed every 500 ms. Wait at least 1 second after running a program.
-- If the file is missing entirely, the firmware could not create it (permissions issue). On the Pi: `chmod 777 ~/pi86/code/v20/` and restart the firmware.
+- Logging is off by default. Make sure you launched pi86 with `PI86_LOG=1 ./run_pi86.sh`. The startup line `[buslog] Logging bus cycles to bus_trace.csv` confirms it is active.
+- The file is flushed every 100 ms. If it still appears empty after a second, check permissions: `chmod 777 ~/pi86/code/v20/` and relaunch with `PI86_LOG=1`.
 
 ### NASM error: "parser: instruction expected"
 

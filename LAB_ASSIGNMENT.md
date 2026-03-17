@@ -99,7 +99,13 @@ The augmented firmware adds several features specifically for this lab:
 | `0x82` | Write `0x00` | **Reset bus statistics counters** |
 | `0x83`–`0x8A` | Read | **Bus statistics:** memory read count (2 bytes), memory write count, I/O read count, I/O write count |
 
-**bus\_trace.csv** is created in the current working directory when the pi86 firmware starts. Each row records one bus cycle:
+**bus\_trace.csv** is created in the current working directory when pi86 is launched with `PI86_LOG=1`. Logging is off by default to avoid unnecessary disk writes. Enable it when a deliverable requires CSV analysis:
+
+```bash
+PI86_LOG=1 ./run_pi86.sh
+```
+
+Each row records one bus cycle:
 
 ```
 cycle, type, address, data, wait_states

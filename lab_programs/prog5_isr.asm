@@ -17,8 +17,7 @@
 ;    - The interrupt vector number (0x08) placed on the data bus during INTA
 ;    - The push/pop sequence as the CPU saves and restores flags+CS+IP
 ;      (visible as a burst of memory writes then reads to the stack segment)
-;    - The trigger pulse on GPIO 17 that coincides with the ISR writing to
-;      port 0x80 — correlate this with the INTA bus cycle timing
+;    - The checkpoint console output / CSV entry when the ISR writes to port 0x80
 ;    - The effect of interrupt latency: how many CLKs between the INTR line
 ;      going HIGH and the first INTA pulse
 ;
@@ -116,7 +115,7 @@ custom_isr:
     ; Increment tick counter
     inc  word [tick_count]
 
-    ; Write low byte of tick counter to checkpoint port (-> GPIO trigger pulse)
+    ; Write low byte of tick counter to checkpoint port (logged to console + CSV)
     mov  ax, [tick_count]
     out  PORT_CHECKPOINT, al
 

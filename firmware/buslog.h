@@ -19,9 +19,18 @@
 #include "x86.h"
 
 // ---------------------------------------------------------------------------
-// Initialise the logger.  Must be called once before Start().
-// Opens / truncates bus_trace.csv and writes the CSV header.
-// Spawns the background flush thread.
+// Initialize the logger.  Must be called once before Start().
+//
+// Logging is OFF by default.  Set the environment variable PI86_LOG=1
+// before launching pi86 to enable it:
+//
+//   PI86_LOG=1 sudo -E ./pi86
+//   PI86_LOG=1 ./run_pi86.sh
+//
+// When enabled: opens/truncates bus_trace.csv, writes the CSV header,
+// and spawns the background flush thread.
+// When disabled: prints a one-line notice and returns immediately (no file
+// is created, no thread is started, BusLog_Push is a no-op).
 // ---------------------------------------------------------------------------
 void BusLog_Init();
 

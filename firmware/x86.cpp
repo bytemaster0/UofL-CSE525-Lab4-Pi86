@@ -5,7 +5,7 @@
 //  Lab augmentations (marked with  [LAB]):
 //    1. Bus-cycle logger        — every transaction recorded to bus_trace.csv
 //    2. Configurable wait states — extra CLK pulses, controlled by I/O 0x81
-//    3. Debug checkpoint port   — I/O write to 0x80 pulses a GPIO trigger line
+//    3. Debug checkpoint port   — I/O write to 0x80 prints to console + CSV
 //    4. ROM write protection    — writes to 0xF0000–0xFFFFF are silently dropped
 //    5. Bus statistics counters — readable at I/O 0x83-0x8A from ASM code
 // ============================================================================
@@ -216,7 +216,7 @@ static inline void Insert_Wait_States(unsigned char n)
 }
 
 // ---------------------------------------------------------------------------
-// [LAB] Debug GPIO trigger  (logic-analyzer sync pulse on PORT_DEBUG_CHECKPOINT)
+// [LAB] Debug trigger pulse  (no-op on Pi 3B/4B — pins 17/18 not on 40-pin header)
 // ---------------------------------------------------------------------------
 static inline void Pulse_Debug_Trigger()
 {
@@ -238,7 +238,7 @@ static bool Handle_Debug_IO_Write(unsigned int Address, unsigned char Data)
     switch (Address) {
         case PORT_DEBUG_CHECKPOINT:
             // ASM did:  OUT 0x80, al
-            // Log the checkpoint, pulse the debug GPIO, and print to console.
+            // Log the checkpoint and print to console (GPIO pulse is a no-op).
             printf("[POST] Checkpoint 0x%02X  (cycle %llu)\n",
                    Data, (unsigned long long)g_cycle_count);
             Pulse_Debug_Trigger();
@@ -672,12 +672,12 @@ void Reset()
 }
 
 // ---------------------------------------------------------------------------
-// Start — sets up GPIO, resets processor, starts bus + logger threads
+// Start — sets up GPIO, resets processor, starts bus thread; logger is opt-in (PI86_LOG=1)
 // ---------------------------------------------------------------------------
 void Start(int Processor)
 {
     Setup();
-    BusLog_Init();     // [LAB] open CSV and start flush thread
+    BusLog_Init();     // [LAB] start CSV logger if PI86_LOG=1
     Reset();
     thread System_Bus(Start_System_Bus, Processor);
     System_Bus.detach();
@@ -709,15 +709,13 @@ void Load_Bios(string Bios_file)
     Write_IO_Byte(0xF0F0, 0x03);   // Video mode
     Write_IO_Byte(0x3DA,  0xFF);
 
-    // [LAB] Initialise debug port shadow values
+    // [LAB] Initialize debug port shadow values
     Write_IO_Byte(PORT_DEBUG_CHECKPOINT, 0x00);
     Write_IO_Byte(PORT_WAIT_STATE_CTRL,  0x00);
     Refresh_Stats_IO();
 
     printf("[bios] Loaded %d bytes from %s\n", FileSize, Bios_file.c_str());
-    printf("[bios] Debug trigger GPIO: wiringPi pin %d\n", PIN_DEBUG_TRIGGER);
-    printf("[bios] Bus activity GPIO:  wiringPi pin %d\n", PIN_BUS_ACTIVITY);
-    printf("[bios] Bus trace file:     %s\n", BUS_LOG_FILENAME);
+    printf("[bios] Bus trace file: %s (enable with PI86_LOG=1)\n", BUS_LOG_FILENAME);
 }
 
 // ============================================================================

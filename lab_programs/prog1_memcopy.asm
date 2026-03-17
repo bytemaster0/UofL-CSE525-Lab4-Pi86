@@ -13,7 +13,7 @@
 ;    - The address appearing on AD0-AD7, A8-A19 during the ALE window
 ;    - The /RD or /WR control signals (via DTR and IO/M pins)
 ;    - How many clock cycles separate successive memory accesses
-;    - The GPIO trigger pulse (pin 17) on each checkpoint write
+;    - The console output and CSV entry on each checkpoint write (PI86_LOG=1)
 ;
 ;  Build:  nasm -f bin -o prog1.com prog1_memcopy.asm
 ;  Run:    copy prog1.com to the pi86 DOS floppy image, then run from DOS
@@ -86,7 +86,7 @@ done:
     int  0x21
 
 ; ---------------------------------------------------------------------------
-; Source data -- 256 bytes with a recognisable pattern
+; Source data -- 256 bytes with a recognizable pattern
 ; Students can identify this pattern in the logic analyzer capture
 ; (look for the repeating 0x00..0xFF sequence on the data bus)
 ; ---------------------------------------------------------------------------
@@ -98,7 +98,7 @@ source_data:
 %endrep
 
 ; ---------------------------------------------------------------------------
-; Destination buffer -- zero-initialised
+; Destination buffer -- zero-initialized
 ; ---------------------------------------------------------------------------
 dest_buffer:
     times 256  db 0x00

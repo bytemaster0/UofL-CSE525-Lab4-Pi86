@@ -26,6 +26,10 @@ static atomic<bool>          s_running{false};
 // File handle shared between Init / Flush / Shutdown
 static FILE *s_fp = nullptr;
 
+// Set to true only when Init succeeds and logging was requested via PI86_LOG=1.
+// Checked in BusLog_Push to avoid ring-buffer churn when logging is disabled.
+static bool s_enabled = false;
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -50,6 +54,7 @@ void BusLog_Push(BusCycleType type,
                  unsigned char data,
                  unsigned char wait_states)
 {
+    if (!s_enabled) return;
     unsigned int idx = s_write_idx.fetch_add(1, memory_order_relaxed)
                        % BUS_LOG_CAPACITY;
     BusLogEntry &e = s_ring[idx];
@@ -92,12 +97,12 @@ void BusLog_Flush()
 }
 
 // ---------------------------------------------------------------------------
-// Background flush thread  --  flushes every 500 ms
+// Background flush thread  --  flushes every 100 ms
 // ---------------------------------------------------------------------------
 static void flush_thread_fn()
 {
     while (s_running.load(memory_order_relaxed)) {
-        usleep(500000);   // 500 ms
+        usleep(100000);   // 100 ms
         BusLog_Flush();
     }
     // Final drain
@@ -111,6 +116,12 @@ static thread s_flush_thread;
 // ---------------------------------------------------------------------------
 void BusLog_Init()
 {
+    if (!getenv("PI86_LOG")) {
+        printf("[buslog] Bus logging disabled. "
+               "Run with PI86_LOG=1 to enable (see GETTING_STARTED.md).\n");
+        return;
+    }
+
     s_fp = fopen(BUS_LOG_FILENAME, "w");
     if (!s_fp) {
         fprintf(stderr, "[buslog] WARNING: could not open %s for writing.\n",
@@ -124,6 +135,7 @@ void BusLog_Init()
     s_write_idx.store(0, memory_order_relaxed);
     s_read_idx.store(0,  memory_order_relaxed);
     s_running.store(true, memory_order_relaxed);
+    s_enabled = true;
 
     s_flush_thread = thread(flush_thread_fn);
     s_flush_thread.detach();
@@ -143,8 +155,10 @@ void BusLog_Reset()
 
 void BusLog_Shutdown()
 {
+    if (!s_enabled) return;   // not initialized or already shut down
+    s_enabled = false;         // stop BusLog_Push from adding new entries
     s_running.store(false, memory_order_relaxed);
-    usleep(700000);   // Give flush thread time to exit (it sleeps 500 ms)
+    usleep(200000);   // Give flush thread time to exit (it sleeps 100 ms)
     BusLog_Flush();
     if (s_fp) {
         fclose(s_fp);

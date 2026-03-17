@@ -16,7 +16,6 @@
 ;    - IO/M signal: HIGH throughout (contrast with memory access programs)
 ;    - Constant address 0x80 on A7..A0 (A8-A19 should be zero)
 ;    - Walking-bit data pattern on AD0-AD7
-;    - GPIO trigger pulse (pin 17) on EVERY write
 ;    - Period between writes = total clock cycles for the inner loop
 ;
 ;  Build:  nasm -f bin -o prog2.com prog2_io_toggle.asm
