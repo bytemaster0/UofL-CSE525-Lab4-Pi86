@@ -63,8 +63,8 @@ Power the Pi off before attaching probes.
 Attach hook-tip leads in this order. Work from channel 0 upward — it is easy to lose track if you start in the middle.
 
 ```
-Ch 0  →  CLK   (test point labeled CLK)
-Ch 1  →  ALE   (test point labeled ALE)
+Ch 0  →  CLK   (CLK - check reference pin on 8088/NEC V20 pinout diagram)
+Ch 1  →  ALE   (ALE - check reference pi on 8088/NEC V20 pinout diagram)
 Ch 2  →  AD0   (lowest bit of the multiplexed bus)
 Ch 3  →  AD7   (highest bit of the multiplexed bus)
 Ch 4  →  A15   (upper address — always address, never data)
@@ -76,7 +76,7 @@ Ch 6  →  DT/R  (LOW = read,    HIGH = write)
 
 **For Week 2 interrupt experiments, add:**
 ```
-Ch 7  →  INTR  (physical header pin 38, labeled INTR on the PCB)
+Ch 7  →  INTR  (physical header pin 38, match to INTR on 8088/NEC V20 pinout)
 ```
 
 **Ground:** Attach the logic analyzer's ground lead to the GND test point (usually the pad nearest a board edge, marked GND). One ground connection is sufficient.
@@ -85,7 +85,7 @@ Ch 7  →  INTR  (physical header pin 38, labeled INTR on the PCB)
 
 ### Color Coding (Optional but Helpful)
 
-Most logic analyzer kits include colored probe wires. Suggested convention:
+Most logic analyzer kits include colored probe wires. Suggested convention, depends on what's available in the lab kit:
 
 | Color | Signal type |
 |-------|-------------|
@@ -103,7 +103,7 @@ Most logic analyzer kits include colored probe wires. Suggested convention:
 ### 4a. Connect the Logic Analyzer
 
 1. Connect the logic analyzer to your laptop via USB.
-2. Open **Saleae Logic 2** (or DSView / your software of choice).
+2. Open logic level analyzer software.
 3. The analyzer should appear as a connected device in the top-left panel. If it does not, check the USB cable and reinstall the driver.
 
 ### 4b. Configure Channels
@@ -120,7 +120,7 @@ In the channel setup panel:
 | 5 | IO/M | 1.65 V |
 | 6 | DT/R | 1.65 V |
 
-> Saleae Logic 2: right-click a channel label → Rename. Threshold is set under Preferences → Voltage.
+Rename your channels as needed and preset threshold voltages.
 
 ### 4c. Set Sample Rate and Trigger
 
@@ -453,18 +453,6 @@ If any item fails, resolve it before moving on to the lab exercises.
 ---
 
 ## Reference: Key Keyboard Shortcuts
-
-### Saleae Logic 2
-
-| Action | Shortcut |
-|--------|----------|
-| Start / Stop capture | Space |
-| Zoom in | Ctrl + scroll, or `+` |
-| Zoom out | Ctrl + scroll, or `-` |
-| Fit capture in view | Ctrl + 0 |
-| Add timing marker | Press `1`–`9` |
-| Measure time between markers | Automatic in the Measurements panel |
-| Export data | File → Export → CSV |
 
 ### DOS Commands (at the `A:\>` prompt)
 

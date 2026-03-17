@@ -27,10 +27,10 @@ By the end you will have:
 | Item | Qty | Notes |
 |------|-----|-------|
 | Raspberry Pi (3B+ or 4) with pi86 daughterboard | 1 per team | Pre-assembled and tested by instructor |
-| Logic analyzer (8+ channels) | 1 per team | Saleae Logic, DSLogic, or equivalent |
+| Logic analyzer (8+ channels) | 1 per team | Logic analyzer software |
 | Hook-tip probe leads | 8+ | Clip to the PCB test points listed below |
 | microSD card with pi86 image | 1 | Pre-loaded; contains augmented firmware and DOS |
-| Laptop with logic-analyzer software | 1 per team | Saleae Logic 2 or DSView |
+| Laptop with logic-analyzer software | 1 per team | Logic analyzer software |
 | USB keyboard | 1 | For DOS interaction |
 | HDMI monitor | 1 | For CGA display output |
 
