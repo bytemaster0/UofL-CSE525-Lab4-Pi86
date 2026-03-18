@@ -1,0 +1,154 @@
+//Compiler
+//g++ pi86.cpp x86.cpp buslog.cpp cga.cpp vga.cpp font.h timer.cpp drives.cpp keycodes.h -o pi86 `sdl2-config --cflags --libs` -pthread -lwiringPi -Wl,--allow-multiple-definition
+
+// SDL2 compatibility note (Raspberry Pi OS Bookworm/Trixie):
+// SDL2 on modern Pi OS requires all rendering and event-pump calls to originate
+// from the main thread.  Three changes were made relative to the upstream file:
+//   1. SDL_WINDOW_OPENGL        -> SDL_WINDOW_SHOWN
+//   2. SDL_RENDERER_ACCELERATED -> SDL_RENDERER_SOFTWARE
+//   3. Rendering moved from the screen_loop worker thread into the main loop;
+//      SDL_PumpEvents() added so the keyboard thread's SDL_PollEvent still works.
+
+#include "SDL.h"
+#include <stdio.h>
+#include <fstream>
+#include <unistd.h>
+#include <thread>
+#include "x86.h"
+#include "font.h"
+#include "vga.h"
+#include "timer.h"
+#include "drives.h"
+#include "keycodes.h"
+
+
+using namespace std;
+
+void keyboard();
+
+int main(int argc, char* argv[]) {
+
+	SDL_Window *window;                    // Declare a pointer
+	SDL_Renderer *renderer = NULL;
+	SDL_Init(SDL_INIT_VIDEO);              // Initialize SDL2
+
+	// Create an application window with the following settings:
+	window = SDL_CreateWindow(
+        "x86",     		             // window title
+        SDL_WINDOWPOS_UNDEFINED,           // initial x position
+        SDL_WINDOWPOS_UNDEFINED,           // initial y position
+        720,                               // width, in pixels
+        400,                               // height, in pixels
+        SDL_WINDOW_SHOWN                   // flags (SDL_WINDOW_OPENGL removed: causes
+	                                   //   cross-thread rendering failure on SDL2 >= 2.24)
+	);
+
+	renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_SOFTWARE);
+	                                       // SDL_RENDERER_ACCELERATED removed: OpenGL
+	                                       // context is thread-local; screen_loop rendered
+	                                       // from a worker thread so all GL calls silently
+	                                       // failed.  Software renderer has no such constraint.
+
+	//The bios file to load
+	Load_Bios("pcxtbios.rom");
+
+
+	///////////////////////////////////////////////////////////////////
+	//Change this Start(V30); 8086 or Start(V20); 8088 to set the processor
+	///////////////////////////////////////////////////////////////////
+	Start(V20);
+
+
+
+	//Drive images a: and C:
+	Start_Drives("floppy.img", "hdd.img");
+	//Starts the system timer, IRQ0 / INT 0x08
+	Start_System_Timer();
+
+	thread keyboard_loop(keyboard);			//Start Keyboard
+
+	// Rendering runs on the main thread (SDL2 requirement on modern Pi OS).
+	// SDL_PumpEvents() keeps the X11 event queue drained so keyboard_loop's
+	// SDL_PollEvent() continues to receive key events.
+	char _vm40[2000], _vm80[4000], _vm320[0x4000], _cur[2];
+	while (Stop_Flag != true)
+	{
+		SDL_PumpEvents();
+		char _vm = Read_Memory_Byte(0x00449);
+		if (_vm == 0x00 || _vm == 0x01) {
+			Read_Memory_Array(0xB8000, _vm40, 2000);
+			Read_Memory_Array(0x00450, _cur, 2);
+			Mode_0_40x25(renderer, _vm40, _cur);
+		} else if (_vm == 0x02 || _vm == 0x03) {
+			Read_Memory_Array(0xB8000, _vm80, 4000);
+			Read_Memory_Array(0x00450, _cur, 2);
+			Mode_2_80x25(renderer, _vm80, _cur);
+		} else if (_vm == 0x04) {
+			Read_Memory_Array(0xB8000, _vm320, 0x4000);
+			if (Read_Memory_Byte(0x00466) == 0x20)
+				Graphics_Mode_320_200_Palette_1(renderer, _vm320);
+			else
+				Graphics_Mode_320_200_Palette_0(renderer, _vm320);
+		}
+		if (Read_IO_Byte(0xF0FF) == 0x00) { Stop_Flag = true; break; }
+	}
+
+	keyboard_loop.join();
+
+	//this is for returning from full screen
+	//SDL_SetWindowFullscreen(window, 0);
+
+	// Close and destroy the window
+	SDL_DestroyRenderer(renderer);
+	SDL_DestroyWindow(window);
+	// Clean up
+	SDL_Quit();
+	return 0;
+}
+
+
+void Insert_Key(char character_code, char scan_code) //Interrupt_9
+{
+	char Key_Buffer_Tail =  Read_Memory_Byte(0x041C);               	//Read the position of the keyboard buffer tail pointer
+	Write_Memory_Byte(0x400 + Key_Buffer_Tail, character_code); 	//Write Character code at the keyboard buffer tail pointer
+	Write_Memory_Byte(0x401 + Key_Buffer_Tail, scan_code);      	//Write scan code at the keyboard buffer tail pointer
+	Key_Buffer_Tail = Key_Buffer_Tail + 2;                         		//Add 2 to the keyboard buffer tail pointer
+	if(Key_Buffer_Tail >=  Read_Memory_Byte(0x0482))                	//Check to see if the keyboard buffer tail pointer is at the end of the buffer
+	{
+		Key_Buffer_Tail = Read_Memory_Byte(0x0480);
+	}
+	Write_Memory_Byte(0x041C, Key_Buffer_Tail);                    	//Write the new keyboard buffer tail pointer
+}
+
+void keyboard()
+{
+	SDL_Event e;
+	while(Stop_Flag != true)
+	{
+		if (SDL_PollEvent(&e))
+		{
+			//Ends the program when click X
+			if (e.type == SDL_QUIT)
+			{
+				Stop_Flag = true;
+				break;
+			}
+			//Process Key
+			if(e.type == SDL_KEYDOWN)
+	 		{
+				//Convert SDL scancode to x86 scancode
+				Write_IO_Byte(0x0060, scan_codes[e.key.keysym.scancode]);
+				//Trigger IRQ1
+				IRQ1();
+			}
+			if(e.type == SDL_KEYUP)
+	 		{
+				//Convert SDL scancode to x86 scancode
+				Write_IO_Byte(0x0060, (scan_codes[e.key.keysym.scancode] + 0x80));
+				//Trigger IRQ1
+				IRQ1();
+			}
+
+		}
+	}
+}
