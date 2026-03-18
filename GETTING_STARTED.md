@@ -374,14 +374,14 @@ DEBUG
 At the `-` prompt, enter these commands one at a time (do not type the comment text in parentheses):
 
 ```
-o 81 04
+o E1 04
 o 80 AA
-o 81 00
+o E1 00
 o 80 BB
 q
 ```
 
-The first `o 81 04` sets 4 wait states. The `o 80 AA` generates a checkpointed I/O write with 4 wait states. The `o 81 00` clears them, and `o 80 BB` generates a 0-wait-state write for comparison.
+The first `o E1 04` sets 4 wait states. The `o 80 AA` generates a checkpointed I/O write with 4 wait states. The `o E1 00` clears them, and `o 80 BB` generates a 0-wait-state write for comparison.
 
 On the logic analyzer (trigger on ALE, capture a 50 ms window before typing the DEBUG commands), zoom into the I/O write for `0xAA` vs. the one for `0xBB`. You should see four extra CLK pulses between the address phase and the data phase in the `0xAA` cycle, and none in the `0xBB` cycle.
 
@@ -473,5 +473,5 @@ If any item fails, resolve it before moving on to the lab exercises.
 | `d 0100` | Dump memory at offset 0x100 |
 | `u 0100` | Unassemble from offset 0x100 |
 | `o 80 AA` | Write 0xAA to I/O port 0x80 |
-| `i 83` | Read I/O port 0x83 |
+| `i E3` | Read I/O port 0xE3 (mem-read count low byte) |
 | `q` | Quit |

@@ -4,10 +4,10 @@
 //
 //  Lab augmentations (marked with  [LAB]):
 //    1. Bus-cycle logger        — every transaction recorded to bus_trace.csv
-//    2. Configurable wait states — extra CLK pulses, controlled by I/O 0x81
+//    2. Configurable wait states — extra CLK pulses, controlled by I/O 0xE1
 //    3. Debug checkpoint port   — I/O write to 0x80 prints to console + CSV
 //    4. ROM write protection    — writes to 0xF0000–0xFFFFF are silently dropped
-//    5. Bus statistics counters — readable at I/O 0x83-0x8A from ASM code
+//    5. Bus statistics counters — readable at I/O 0xE3-0xEA from ASM code
 // ============================================================================
 
 #include "x86.h"
@@ -245,9 +245,9 @@ static bool Handle_Debug_IO_Write(unsigned int Address, unsigned char Data)
             return false;   // also store in IO[] so BIOS code can read it back
 
         case PORT_WAIT_STATE_CTRL:
-            // ASM did:  OUT 0x81, al  (bits 2:0 = wait state count, 0–7)
+            // ASM did:  OUT 0xE1, al  (bits 2:0 = wait state count, 0–7)
             g_wait_states = Data & 0x07;
-            IO[PORT_WAIT_STATE_CTRL] = g_wait_states;  // keep shadow in sync for IN 0x81 readback
+            IO[PORT_WAIT_STATE_CTRL] = g_wait_states;  // keep shadow in sync for IN 0xE1 readback
             printf("[wait] Wait states set to %u\n", (unsigned)g_wait_states);
             return true;
 

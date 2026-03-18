@@ -3,9 +3,9 @@
 ;  Target: 8088/V20 running under DOS (COM file)
 ;
 ;  Purpose:
-;    Exercises the pi86 wait-state controller at I/O port 0x81.
+;    Exercises the pi86 wait-state controller at I/O port 0xE1.
 ;    For each wait-state count (0, 1, 2, 4, 7), the program:
-;      1. Writes the count to port 0x81  (pi86 firmware will insert that many
+;      1. Writes the count to port 0xE1  (pi86 firmware will insert that many
 ;         extra CLK pulses before completing each subsequent bus cycle)
 ;      2. Writes a checkpoint to port 0x80 to mark the start of the timed
 ;         section on the logic analyzer
@@ -21,7 +21,7 @@
 ;    With W wait states each of the 256 bus cycles (128 reads + 128 writes)
 ;    is extended by W clock periods, so total time ≈ T0 + 256 * W * T_clk.
 ;
-;  Port 0x81 encoding:  bits [2:0] = wait state count (0-7), bits [7:3] = 0
+;  Port 0xE1 encoding:  bits [2:0] = wait state count (0-7), bits [7:3] = 0
 ;
 ;  Build:  nasm -f bin -o prog3.com prog3_waitstates.asm
 ; =============================================================================
@@ -30,7 +30,7 @@
     ORG  0x100
 
 PORT_CHECKPOINT  EQU  0x80
-PORT_WAIT_STATES EQU  0x81
+PORT_WAIT_STATES EQU  0xE1
 BLOCK_SIZE       EQU  128
 
 start:

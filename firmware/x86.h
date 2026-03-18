@@ -7,9 +7,9 @@
 //
 //  Additions for lab use:
 //    - Bus cycle trace logger (CSV output)
-//    - Configurable wait-state injection via I/O port 0x81
+//    - Configurable wait-state injection via I/O port 0xE1
 //    - Debug checkpoint port 0x80  (POST-code style; prints to console + CSV)
-//    - Bus activity statistics counters, readable at I/O 0x83-0x8A
+//    - Bus activity statistics counters, readable at I/O 0xE3-0xEA
 //    - ROM write-protection for 0xF0000–0xFFFFF
 // ============================================================================
 
@@ -73,19 +73,24 @@
 
 // ---------------------------------------------------------------------------
 // Debug / lab I/O port map (all in 8-bit port range for easy OUT imm8)
+//
+// 0x80 is the standard PC POST-code port — kept as the checkpoint address.
+// All other lab ports are placed in 0xE0–0xEA, which is unused by standard
+// PC hardware (avoids conflict with DMA page registers at 0x81–0x8F that the
+// BIOS writes to during initialization).
 // ---------------------------------------------------------------------------
 #define PORT_DEBUG_CHECKPOINT  0x80  // Write: log POST code to console + CSV
-#define PORT_WAIT_STATE_CTRL   0x81  // Write: set # of wait states (0–7)
+#define PORT_WAIT_STATE_CTRL   0xE1  // Write: set # of wait states (0–7)
                                      // Read:  return current wait-state count
-#define PORT_STATS_CTRL        0x82  // Write 0x00: reset all counters
-#define PORT_STAT_MREAD_LO     0x83  // Read: mem-read  count, byte 0 (LSB)
-#define PORT_STAT_MREAD_HI     0x84  // Read: mem-read  count, byte 1
-#define PORT_STAT_MWRITE_LO    0x85  // Read: mem-write count, byte 0
-#define PORT_STAT_MWRITE_HI    0x86  // Read: mem-write count, byte 1
-#define PORT_STAT_IOREAD_LO    0x87  // Read: I/O-read  count, byte 0
-#define PORT_STAT_IOREAD_HI    0x88  // Read: I/O-read  count, byte 1
-#define PORT_STAT_IOWRITE_LO   0x89  // Read: I/O-write count, byte 0
-#define PORT_STAT_IOWRITE_HI   0x8A  // Read: I/O-write count, byte 1
+#define PORT_STATS_CTRL        0xE2  // Write 0x00: reset all counters
+#define PORT_STAT_MREAD_LO     0xE3  // Read: mem-read  count, byte 0 (LSB)
+#define PORT_STAT_MREAD_HI     0xE4  // Read: mem-read  count, byte 1
+#define PORT_STAT_MWRITE_LO    0xE5  // Read: mem-write count, byte 0
+#define PORT_STAT_MWRITE_HI    0xE6  // Read: mem-write count, byte 1
+#define PORT_STAT_IOREAD_LO    0xE7  // Read: I/O-read  count, byte 0
+#define PORT_STAT_IOREAD_HI    0xE8  // Read: I/O-read  count, byte 1
+#define PORT_STAT_IOWRITE_LO   0xE9  // Read: I/O-write count, byte 0
+#define PORT_STAT_IOWRITE_HI   0xEA  // Read: I/O-write count, byte 1
 
 // ---------------------------------------------------------------------------
 // ROM region  (writes here are silently discarded — acts like real ROM)

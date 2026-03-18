@@ -21,8 +21,8 @@ The `firmware/` files add the following on top of the upstream pi86 firmware:
 
 - **Bus trace logger** — every bus cycle (address, data, type, wait states) is written to `bus_trace.csv` via a lock-free ring buffer and background flush thread.
 - **Debug checkpoint port (0x80)** — `OUT 0x80, AL` logs a POST-code-style checkpoint to the CSV and prints it to the Pi's terminal, making it easy to correlate specific program events with bus captures.
-- **Wait-state controller (0x81)** — `OUT 0x81, AL` inserts 0–7 extra CLK cycles per bus transaction in real time, allowing bandwidth measurements at different wait-state settings.
-- **Bus statistics ports (0x82–0x8A)** — read-back counters for memory reads, memory writes, I/O reads, and I/O writes; reset with `OUT 0x82, 0`.
+- **Wait-state controller (0xE1)** — `OUT 0xE1, AL` inserts 0–7 extra CLK cycles per bus transaction in real time, allowing bandwidth measurements at different wait-state settings.
+- **Bus statistics ports (0xE2–0xEA)** — read-back counters for memory reads, memory writes, I/O reads, and I/O writes; reset with `OUT 0xE2, 0`.
 - **ROM write protection** — writes to the 0xF0000–0xFFFFF BIOS region are silently discarded by the firmware, matching the behavior of a real ROM chip.
 
 ## Lab Programs
@@ -46,7 +46,8 @@ The `firmware/` files add the following on top of the upstream pi86 firmware:
 **Firmware** (on the Raspberry Pi, after copying `firmware/` files into `~/pi86/code/v20/`):
 ```bash
 g++ -o pi86 pi86.cpp x86.cpp buslog.cpp cga.cpp vga.cpp drives.cpp timer.cpp \
-    $(sdl2-config --cflags --libs) -lwiringPi -lpthread -std=c++11 -O2
+    $(sdl2-config --cflags --libs) -lwiringPi -lpthread -std=c++11 -O2 \
+    -Wl,--allow-multiple-definition
 ```
 
 **Lab programs** (requires NASM):

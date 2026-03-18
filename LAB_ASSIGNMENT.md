@@ -95,9 +95,9 @@ The augmented firmware adds several features specifically for this lab:
 | I/O Port | Direction | Function |
 |----------|-----------|----------|
 | `0x80` | Write | **Debug checkpoint:** logs to `bus_trace.csv` and prints `[POST] Checkpoint 0xNN` to Pi terminal |
-| `0x81` | Read/Write | **Wait-state count:** bits [2:0] set the number of extra CLK cycles inserted per bus transaction (0–7) |
-| `0x82` | Write `0x00` | **Reset bus statistics counters** |
-| `0x83`–`0x8A` | Read | **Bus statistics:** memory read count (2 bytes), memory write count, I/O read count, I/O write count |
+| `0xE1` | Read/Write | **Wait-state count:** bits [2:0] set the number of extra CLK cycles inserted per bus transaction (0–7) |
+| `0xE2` | Write `0x00` | **Reset bus statistics counters** |
+| `0xE3`–`0xEA` | Read | **Bus statistics:** memory read count (2 bytes), memory write count, I/O read count, I/O write count |
 
 **bus\_trace.csv** is created in the current working directory when pi86 is launched with `PI86_LOG=1`. Logging is off by default to avoid unnecessary disk writes. Enable it when a deliverable requires CSV analysis:
 
@@ -197,7 +197,7 @@ Still running (or re-run) Program 1. After the program exits, open `bus_trace.cs
 Run Program 3 (`prog3.com`).
 
 1. Trigger on ALE (Ch 1). Capture the full program run (roughly 10 ms).
-2. For each wait-state setting (0, 1, 2, 4, 7), locate the two surrounding I/O write cycles at port 0x81 (wait-state change) and 0x80 (checkpoint codes 0x10|n and 0x20) and measure the elapsed time between the start and end checkpoints. Use `bus_trace.csv` to identify the cycle numbers of the checkpoint writes, then navigate to those positions in the Logic 2 timeline.
+2. For each wait-state setting (0, 1, 2, 4, 7), locate the two surrounding I/O write cycles at port 0xE1 (wait-state change) and 0x80 (checkpoint codes 0x10|n and 0x20) and measure the elapsed time between the start and end checkpoints. Use `bus_trace.csv` to identify the cycle numbers of the checkpoint writes, then navigate to those positions in the Logic 2 timeline.
 3. Plot **block-copy time vs. wait states** on graph paper or a spreadsheet.
 
 **Deliverable 2.1:**
@@ -326,17 +326,17 @@ out  0x80, al
 
 ; Set wait states (0–7)
 mov  al, N             ; N = 0, 1, 2, 3, 4, 5, 6, or 7
-out  0x81, al
+out  0xE1, al
 
 ; Read memory-read count into AX
-in   al, 0x83          ; low byte
+in   al, 0xE3          ; low byte
 mov  ah, al
-in   al, 0x84          ; high byte
+in   al, 0xE4          ; high byte
 xchg al, ah            ; AX = 16-bit mem-read count
 
 ; Reset all counters
 xor  al, al
-out  0x82, al
+out  0xE2, al
 ```
 
 ---
@@ -375,7 +375,7 @@ make install      # copies .com files onto the floppy.img using mtools
 cd ~/pi86/code/v20
 # The original Makefile compiles pi86.cpp; add the new source files:
 g++ -o pi86 pi86.cpp x86.cpp buslog.cpp cga.cpp vga.cpp timer.cpp drives.cpp \
-    -lwiringPi -lSDL2 -lpthread -std=c++11 -O2
+    -lwiringPi -lSDL2 -lpthread -std=c++11 -O2 -Wl,--allow-multiple-definition
 sudo ./pi86
 ```
 
@@ -448,4 +448,4 @@ cycle,type,address,data,wait_states
 - `data`: hex byte transferred (for 8088 mode)
 - `wait_states`: number of extra CLK pulses inserted for this cycle
 
-The log is flushed to disk every 500 ms by a background thread. Call `BusLog_Reset()` from the Pi-side C++ code (or write 0 to I/O port 0x82 from ASM) to clear the buffer for a new experiment.
+The log is flushed to disk every 500 ms by a background thread. Call `BusLog_Reset()` from the Pi-side C++ code (or write 0 to I/O port 0xE2 from ASM) to clear the buffer for a new experiment.
