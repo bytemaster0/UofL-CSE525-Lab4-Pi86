@@ -20,6 +20,9 @@ Before touching anything, verify you have:
 
 If anything is missing, stop and tell the instructor before proceeding.
 
+>**Important:** If you need the original Pi3B/+ image, please download it here: https://drive.google.com/file/d/1z0neA5d8kHTbi1HleQAAHZKnSSlVTkxi/view?usp=sharing
+You'll need to use the Raspberry Pi Imager, with Custom Image, to write it. Extract the 7z file first and then write to an SD card with at least 16GB of space.
+
 ---
 
 ## Step 1 — Physical Inspection
