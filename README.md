@@ -10,7 +10,7 @@ Students connect a logic analyzer to the live 8088 address/data/control bus, wri
 
 | Path | Contents |
 |------|----------|
-| `firmware/` | Augmented `x86.cpp` / `x86.h` and new `buslog.cpp` / `buslog.h` — drop-in replacements for the pi86 source files |
+| `firmware/` | Augmented `x86.cpp` / `x86.h`, new `buslog.cpp` / `buslog.h`, and patched `pi86.cpp` — drop-in replacements for the pi86 source files |
 | `lab_programs/` | Five 8088 assembly programs (`prog1`–`prog5`) and a `Makefile` |
 | `LAB_ASSIGNMENT.md` | Full 2-week lab assignment with deliverables and grading rubric (130 points) |
 | `GETTING_STARTED.md` | Step-by-step student walk-through from hardware inspection to first captured waveform |
@@ -37,7 +37,7 @@ The `firmware/` files add the following on top of the upstream pi86 firmware:
 
 ## Hardware Requirements
 
-- Raspberry Pi 3B+, 4 or 5 with pi86 daughterboard (NEC V20 / 8088-compatible processor)
+- Raspberry Pi 3B or 4B with pi86 daughterboard (NEC V20 / 8088-compatible processor) — Pi 5 not supported (incompatible GPIO hardware)
 - Logic analyzer with at least 7 channels and 10 MS/s sample rate (Saleae Logic or equivalent)
 - Pre-loaded microSD card with Raspberry Pi OS, pi86 firmware built and running
 
@@ -46,7 +46,7 @@ The `firmware/` files add the following on top of the upstream pi86 firmware:
 **Firmware** (on the Raspberry Pi, after copying `firmware/` files into `~/pi86/code/v20/`):
 ```bash
 g++ -o pi86 pi86.cpp x86.cpp buslog.cpp cga.cpp vga.cpp drives.cpp timer.cpp \
-    $(sdl2-config --cflags --libs) -lwiringPi -lpthread -std=c++11 -O2 \
+    $(sdl2-config --cflags --libs) -lwiringPi -lpthread -lX11 -std=c++11 -O2 \
     -Wl,--allow-multiple-definition
 ```
 
