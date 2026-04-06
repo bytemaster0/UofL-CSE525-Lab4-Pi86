@@ -76,6 +76,10 @@ The pinout used for Wiring Pi is seen here:
 
 ![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/pipins.png)
 
+You can see the pinout from the daughterboard here, just be aware of the 90° rotation of the pins from the Pi — compare this to the Pinout from a standard Raspberry Pi as seen in the Wiring Pi diagram.
+
+![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/adapterpinout.png)
+
 Pay attention to AD0-7, CLK, IO/M, DT/R pins. Each logic level analyzer pin will require a ground pin! Find a suitable ground pin for the Wiring Pi implementation vs the physical Pi pin.
 
 ```
