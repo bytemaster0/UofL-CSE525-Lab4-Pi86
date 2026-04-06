@@ -92,6 +92,21 @@ For reference, the image below shows AD0-7 and ALE pins being connected to the l
 
 > **Note on GPIO trigger:** The pi86 daughterboard uses every one of the Pi's 28 available GPIO header pins for 8088 bus signals, so there is no free pin for a separate logic-analyzer trigger output. Use **ALE rising edge (Ch 1)** as your primary trigger throughout the lab. To locate a specific I/O write to port 0x80, look for the combination IO/M=HIGH and DT/R=HIGH in the captured data, then check the address bits.
 
+In other lab sections, you will use the following pinout:
+```
+Ch 0  →  AD0   (Address and Data Pin 0)
+Ch 1  →  AD1   (Address and Data Pin 1)
+Ch 2  →  AD2   (Address and Data Pin 2)
+Ch 3  →  AD3   (Address and Data Pin 3)
+Ch 4  →  AD4   (Address and Data Pin 4)
+Ch 5  →  AD5   (Address and Data Pin 5)
+Ch 6  →  AD6   (Address and Data Pin 6)
+Ch 7  →  AD7   (Address and Data Pin 7)
+Ch 8  →  ALE   (Address Latch Enable pin, used as a memory address valid/access indicator)
+```
+
+>The above pinout will be called **Pinout Configuration 2** as needed.
+
 **For Week 2 interrupt experiments, add:**
 ```
 Ch 7  →  INTR  (physical header pin 38, match to INTR on 8088/NEC V20 pinout)
