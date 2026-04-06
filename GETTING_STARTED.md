@@ -42,6 +42,11 @@ Let's confirm the system boots before adding probes.
 3. Connect the power supply. **Do not connect it to the wall yet.**
 4. Double-check that the 8088 chip is in its socket.
 5. Plug in the power supply.
+6. On boot, open a terminal.
+7. Enter: cd pi86/code/v20
+8. Run: ./run_pi86.sh
+
+
 
 **Expected behavior within 10 seconds:**
 - Pi status LEDs blink during Linux boot
@@ -50,7 +55,7 @@ Let's confirm the system boots before adding probes.
 
 If you see a blank screen or no DOS prompt after 30 seconds, power off immediately and ask the instructor.
 
-**Do not type anything yet.** Just confirm the prompt is there, then power off to attach the probes.
+**Do not type anything else in the lab yet.** Just confirm the prompt is there, then power off to attach the probes.
 
 ---
 
@@ -62,6 +67,14 @@ Power the Pi off before attaching probes.
 
 Attach hook-tip leads in this order. Work from channel 0 upward — it is easy to lose track if you start in the middle.
 
+Reference the pi86 github project's x86.h reference table for required signals: https://github.com/homebrew8088/pi86/blob/main/code/v20/x86.h
+
+The pinout used for Wiring Pi is seen here:
+
+![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/pipins.png)
+
+Pay attention to AD0-7, CLK, IO/M, DT/R pins. Each logic level analyzer pin will require a ground pin! Find a suitable ground pin for the Wiring Pi implementation vs the physical Pi pin.
+
 ```
 Ch 0  →  CLK   (CLK - check reference pin on 8088/NEC V20 pinout diagram)
 Ch 1  →  ALE   (ALE - check reference pi on 8088/NEC V20 pinout diagram)
@@ -71,6 +84,11 @@ Ch 4  →  A15   (upper address — always address, never data)
 Ch 5  →  IO/M  (LOW = memory,  HIGH = I/O)
 Ch 6  →  DT/R  (LOW = read,    HIGH = write)
 ```
+
+For reference, the image below shows AD0-7 and ALE pins being connected to the logic level analyzer. You can direclty press the probe pins onto the vertical header. For extra ground, you can use the backplane of the pins, there should be just enough of the through-hole pin avaialble.
+
+![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/logicpins.jpg)
+
 
 > **Note on GPIO trigger:** The pi86 daughterboard uses every one of the Pi's 28 available GPIO header pins for 8088 bus signals, so there is no free pin for a separate logic-analyzer trigger output. Use **ALE rising edge (Ch 1)** as your primary trigger throughout the lab. To locate a specific I/O write to port 0x80, look for the combination IO/M=HIGH and DT/R=HIGH in the captured data, then check the address bits.
 
