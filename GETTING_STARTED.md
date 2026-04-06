@@ -431,7 +431,58 @@ Type `q` to exit DEBUG.
 
 ---
 
-## Step 10 — Checklist Before Your Lab Session
+## Step 10 — Updating the Lab Firmware
+
+The microSD card already has the compiled lab firmware installed. This section is only needed if the instructor pushes an update to the lab repository and asks you to pull it.
+
+### 10a. Pull the latest changes
+
+On the Pi (in a terminal):
+
+```bash
+git clone https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/
+cd ~/UofL-CSE525-Lab4-Pi86
+git pull
+```
+
+Note, the 'git pull' is only needed if you want to pull new updates. The 'git clone' is only needed during first time cloning of the repository - only one of the two is needed.
+
+### 10b. Copy the updated firmware files
+
+```bash
+cp ~/UofL-CSE525-Lab4-Pi86/firmware/x86.h      ~/pi86/code/v20/x86.h
+cp ~/UofL-CSE525-Lab4-Pi86/firmware/x86.cpp    ~/pi86/code/v20/x86.cpp
+cp ~/UofL-CSE525-Lab4-Pi86/firmware/buslog.h   ~/pi86/code/v20/buslog.h
+cp ~/UofL-CSE525-Lab4-Pi86/firmware/buslog.cpp ~/pi86/code/v20/buslog.cpp
+cp ~/UofL-CSE525-Lab4-Pi86/firmware/pi86.cpp   ~/pi86/code/v20/pi86.cpp
+```
+
+### 10c. Recompile
+
+```bash
+cd ~/pi86/code/v20
+
+g++ -o pi86 \
+    pi86.cpp x86.cpp buslog.cpp cga.cpp vga.cpp drives.cpp timer.cpp \
+    $(sdl2-config --cflags --libs) \
+    -lwiringPi -lpthread -lX11 \
+    -std=c++11 -O2 \
+    -Wl,--allow-multiple-definition
+```
+
+The build takes about 30–60 seconds and should complete with no errors. Warnings about unused variables are normal.
+
+### 10d. Verify
+
+```bash
+PI86_LOG=1 ./run_pi86.sh
+```
+
+You should see `[buslog] Logging bus cycles to bus_trace.csv` in the terminal output. If the DOS prompt does not appear or the message is missing, recheck Steps 10b and 10c.
+
+---
+
+## Step 11 — Checklist Before Your Lab Session
 
 Use this before each lab session to make sure you are ready:
 
