@@ -480,6 +480,8 @@ PI86_LOG=1 ./run_pi86.sh
 
 You should see `[buslog] Logging bus cycles to bus_trace.csv` in the terminal output. If the DOS prompt does not appear or the message is missing, recheck Steps 10b and 10c.
 
+>Note: PI86_LOG=1 uses a lot of disk space - and fast. Use this only to ensure that your trace writer is working correctly. Otherwise, use PI86_LOG=0 unless otherwise directed.
+
 ---
 
 ## Step 11 — Checklist Before Your Lab Session
