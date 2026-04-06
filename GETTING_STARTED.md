@@ -197,7 +197,7 @@ If everything looks like flat lines (no transitions), check:
 
 If CLK is visible but ALE never pulses, the 8088 may not be running — the daughterboard may need to be reseated.
 
->**If everything worked as expected**, you should see images like the following. Note: These were generated with probes in **Configuration 2.** They show a memory test in progress during POST. You can see both address and data being sent on AD0-AD7. You can see when ALE indicates an address and when data is live.
+**If everything worked as expected**, you should see images like the following. Note: These were generated with probes in **Configuration 2.** They show a memory test in progress during POST. You can see both address and data being sent on AD0-AD7. You can see when ALE indicates an address and when data is live.
 ![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/logic1.png)
 ![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/logic2.png)
 
