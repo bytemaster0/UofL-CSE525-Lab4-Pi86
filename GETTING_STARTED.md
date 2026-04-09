@@ -108,7 +108,7 @@ Ch 3  →  AD3   (Address and Data Pin 3)
 Ch 4  →  AD4   (Address and Data Pin 4)
 Ch 5  →  AD5   (Address and Data Pin 5)
 Ch 6  →  AD6   (Address and Data Pin 6)
-Ch 7  →  AD7   (Address and Data Pin 7)
+Ch 7  →  AD7   (Address and Data Pin 7 (if pin is available!))
 Ch 8  →  ALE   (Address Latch Enable pin, used as a memory address valid/access indicator)
 ```
 
