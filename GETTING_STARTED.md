@@ -76,7 +76,7 @@ The pinout used for Wiring Pi is seen here:
 
 ![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/pipins.png)
 
-You can see the pinout from the daughterboard here, just be aware of the 90° rotation of the pins from the Pi — compare this to the Pinout from a standard Raspberry Pi as seen in the Wiring Pi diagram.
+You can see the pinout from the daughterboard here. I've flipped it so that the pins are what you see with a top-down view of the header. The labels are backwards, but the positions are correct.
 
 ![description](https://github.com/bytemaster0/UofL-CSE525-Lab4-Pi86/blob/main/images/adapterpinout.png)
 
@@ -271,6 +271,12 @@ Bus cycle logging is **off by default** because it generates ~1–2 MB/s of disk
 # On the Pi — from the terminal running the firmware:
 PI86_LOG=1 ./run_pi86.sh
 ```
+
+> **Note:** For `PI86_LOG=1` to work, `run_pi86.sh` must pass the variable through `sudo`. Open the script and check that the `sudo env` line includes `PI86_LOG=${PI86_LOG:-0}`:
+> ```bash
+> sudo env DISPLAY=:0 SDL_RENDER_DRIVER=software PI86_LOG=${PI86_LOG:-0} ./pi86
+> ```
+> If it is missing, add it. Open the file with: `nano ~/pi86/code/v20/run_pi86.sh`
 
 When logging is active, the firmware prints `[buslog] Logging bus cycles to bus_trace.csv` at startup. When disabled, it prints `[buslog] Bus logging disabled.`
 
