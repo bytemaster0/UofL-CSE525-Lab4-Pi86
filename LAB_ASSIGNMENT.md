@@ -30,7 +30,7 @@ By the end you will have:
 | Logic analyzer (8+ channels) | 1 per team | Logic analyzer software |
 | Hook-tip probe leads | 8+ | Clip to the PCB test points listed below |
 | microSD card with pi86 image | 1 | Pre-loaded; contains augmented firmware and DOS |
-| Laptop with logic-analyzer software | 1 per team | Logic analyzer software |
+| Laptop with PulseView (sigrok) | 1 per team | Windows: install WinUSB driver via [Zadig](https://zadig.akeo.ie/) (64-bit) before first use — select the unknown device, choose WinUSB, click Install Driver; Linux: no additional setup |
 | USB keyboard | 1 | For DOS interaction |
 | HDMI monitor | 1 | For CGA display output |
 
@@ -197,7 +197,7 @@ Still running (or re-run) Program 1. After the program exits, open `bus_trace.cs
 Run Program 3 (`prog3.com`).
 
 1. Trigger on ALE (Ch 1). Capture the full program run (roughly 10 ms).
-2. For each wait-state setting (0, 1, 2, 4, 7), locate the two surrounding I/O write cycles at port 0xE1 (wait-state change) and 0x80 (checkpoint codes 0x10|n and 0x20) and measure the elapsed time between the start and end checkpoints. Use `bus_trace.csv` to identify the cycle numbers of the checkpoint writes, then navigate to those positions in the Logic 2 timeline.
+2. For each wait-state setting (0, 1, 2, 4, 7), locate the two surrounding I/O write cycles at port 0xE1 (wait-state change) and 0x80 (checkpoint codes 0x10|n and 0x20) and measure the elapsed time between the start and end checkpoints. Use `bus_trace.csv` to identify the cycle numbers of the checkpoint writes, then use PulseView's zoom and time cursors to locate the corresponding cycles in the capture.
 3. Plot **block-copy time vs. wait states** on graph paper or a spreadsheet.
 
 **Deliverable 2.1:**

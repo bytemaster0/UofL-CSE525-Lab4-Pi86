@@ -16,7 +16,7 @@ Before touching anything, verify you have:
 - [ ] USB keyboard
 - [ ] HDMI cable + monitor
 - [ ] USB-C (or micro-USB) power supply for the Pi
-- [ ] Your laptop with logic-analyzer software installed
+- [ ] Your laptop with PulseView (sigrok) installed
 
 If anything is missing, stop and tell the instructor before proceeding.
 
@@ -143,31 +143,33 @@ Most logic analyzer kits include colored probe wires. Suggested convention, depe
 ### 4a. Connect the Logic Analyzer
 
 1. Connect the logic analyzer to your laptop via USB.
-2. Open logic level analyzer software.
-3. The analyzer should appear as a connected device in the top-left panel. If it does not, check the USB cable and reinstall the driver.
+2. Open **PulseView**.
+   - **Windows:** PulseView requires a WinUSB driver installed via [Zadig](https://zadig.akeo.ie/) before first use. Download and run the 64-bit version from that page. Connect the logic analyzer, then in Zadig select the unknown device from the dropdown list and choose **WinUSB** in the driver selector on the right, then click **Install Driver**. After that, PulseView detects the analyzer automatically — no further configuration is needed.
+   - **Linux:** No additional drivers are needed.
+3. The analyzer appears in the device selector dropdown at the top-left of the PulseView window (typically listed as "fx2lafw"). If it does not appear, unplug and reconnect the USB cable.
 
 ### 4b. Configure Channels
 
-In the channel setup panel:
+In PulseView, channels are listed on the left side of the waveform view. Double-click any channel label to rename it:
 
-| Channel | Rename to | Voltage threshold |
-|---------|-----------|------------------|
-| 0 | CLK | 1.65 V (3.3 V logic) |
-| 1 | ALE | 1.65 V |
-| 2 | AD0 | 1.65 V |
-| 3 | AD7 | 1.65 V |
-| 4 | A15 | 1.65 V |
-| 5 | IO/M | 1.65 V |
-| 6 | DT/R | 1.65 V |
+| Channel | Rename to |
+|---------|-----------|
+| 0 | CLK |
+| 1 | ALE |
+| 2 | AD0 |
+| 3 | AD7 |
+| 4 | A15 |
+| 5 | IO/M |
+| 6 | DT/R |
 
-Rename your channels as needed and preset threshold voltages.
+The voltage threshold is hardware-fixed on these analyzers — no software threshold setting is needed.
 
 ### 4c. Set Sample Rate and Trigger
 
-- **Sample rate:** 10 MS/s (megasamples per second). At ~0.3 MHz bus clock, this gives about 33 samples per CLK period — more than enough to see clean edges.
-- **Capture duration:** Start with **100 ms**. You can increase this later.
+- **Sample rate:** In the toolbar dropdown, select **10 MHz**. At ~0.3 MHz bus clock, this gives about 33 samples per CLK period — more than enough to see clean edges.
+- **Capture duration:** In the sample count field next to the sample rate, enter **1 M** samples (= 100 ms at 10 MHz). You can increase this later.
 - **Trigger:** Rising edge on **ALE** (channel 1).
-  - In Logic 2: click the trigger icon (lightning bolt) next to channel 1, select "Rising Edge".
+  - In PulseView: click the small trigger indicator on the ALE channel row (to the right of the channel label) until it shows a rising edge symbol (↑).
 
 Do **not** press Start yet.
 
@@ -215,7 +217,7 @@ Zoom to a single ALE pulse and the two cycles that follow it:
    - DT/R (Ch 6) LOW = read (CPU is receiving data)
    - AD0–AD7 carry data from the BIOS ROM (this is the opcode being fetched)
 
-**Mark this on your capture** (Logic 2: right-click → Add Marker) and label it "MEM READ - BIOS fetch". You will use this in Deliverable 1.1.
+**Mark this on your capture** (PulseView: right-click on the waveform → Add flag here, or press **M** at the cursor position) and label it "MEM READ - BIOS fetch". You will use this in Deliverable 1.1.
 
 ---
 
